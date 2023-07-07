@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="assets/vendor/bootstrap/css/bootstrap.min.css">
+  <title>Application E-Learning</title>
+  <style>
+    body {
+      background-color: #f0f0f0;
+    }
+    
+    .sidebar {
+      background-color: #335533;
+      color: #ffffff;
+      padding: 20px;
+      height: 100vh;
+    }
+    
+    .sidebar h2 {
+      margin-bottom: 20px;
+    }
+    
+    .sidebar .nav-link {
+      color: #ffffff;
+    }
+    
+    .content {
+      padding: 20px;
+    }
+    
+    .table {
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-lg-2 sidebar">
+        <h2>E-Learning</h2>
+        <ul class="nav flex-column">
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="coursDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              Cours
+            </a>
+            <div class="dropdown">
+              <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
+                Sélectionnez une option
+              </button>
+              <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton" id="dropdownOptions">
+                <!-- Options du dropdown ajoutées dynamiquement -->
+              </ul>
+            </div>
+          </li>
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="exercicesDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              Exercices
+            </a>
+            <ul class="dropdown-menu" aria-labelledby="exercicesDropdown">
+              <li class="nav-item">
+                <a class="dropdown-item" href="#">Classe 1</a>
+              </li>
+              <li class="nav-item">
+                <a class="dropdown-item" href="#">Classe 2</a>
+              </li>
+              <li class="nav-item">
+                <a class="dropdown-item" href="#">Classe 3</a>
+              </li>
+              <!-- Ajoute ici les autres classes récupérées depuis la base de données -->
+            </ul>
+          </li>
+        </ul>
+      </div>
+      <div class="col-lg-10 content">
+        <h2>Matières</h2>
+        <table class="table table-bordered">
+          <thead>
+            <tr>
+              <th scope="col">Matière</th>
+              <th scope="col">Nombre de cours</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+                <td>Matière 1</td>
+                <td>5</td>
+            </tr>
+            <tr>
+                <td>Matière 2</td>
+                <td>3</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  <script src="https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js"></script>
+
+  <script type="module">
+    // Importe les fonctions dont tu as besoin depuis les SDK Firebase dont tu as besoin
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-app.js";
+    import { getFirestore } from "https://www.gstatic.com/firebasejs/10.0.0/firebase-firestore.js";
+
+    // Ta configuration Firebase
+    const firebaseConfig = {
+    apiKey: "AIzaSyC4eGM4rcFNZsgO_6VnQr_Z8hbpfynQV3U",
+    authDomain: "top-science-8fd65.firebaseapp.com",
+    projectId: "top-science-8fd65",
+    storageBucket: "top-science-8fd65.appspot.com",
+    messagingSenderId: "325746831998",
+    appId: "1:325746831998:web:8d5fd48cab9eddc382de2f",
+    measurementId: "G-V2THNBH4YS"
+  };
+
+    // Initialise ton application Firebase
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    
+    // Récupère les références à tes collections Firestore
+    const classesCollectionRef = firebase.firestore().collection("classes");
+    // Ajoute ici les autres références à tes collections Firestore si nécessaire
+
+    // Exemple de récupération des classes depuis Firestore
+    classesCollectionRef.get().then((querySnapshot) => {
+      const dropdownOptions = document.getElementById("dropdownOptions");
+      querySnapshot.forEach((doc) => {
+        const className = doc.id;
+        const option = document.createElement("li");
+        option.innerHTML = `<a class="dropdown-item" href="#">${classes}</a>`;
+        dropdownOptions.appendChild(option);
+      });
+    }).catch((error) => {
+      console.log("Erreur lors de la récupération des classes :", error);
+    });
+  </script>
+</body>
+</html>
