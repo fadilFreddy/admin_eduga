@@ -1,4 +1,6 @@
-    // Ta configuration Firebase
+
+   
+   // Ta configuration Firebase
     const firebaseConfig = {
       apiKey: "AIzaSyC4eGM4rcFNZsgO_6VnQr_Z8hbpfynQV3U",
       authDomain: "top-science-8fd65.firebaseapp.com",
@@ -111,6 +113,15 @@ function affiche(idDoc) {
       console.error("Erreur lors de la récupération du document :", error);
     });
 }
+function confirmerSuppression(courseId) {
+  const confirmDelete = window.confirm("Êtes-vous sûr de vouloir supprimer ce cours ?");
+
+    if (confirmDelete) {
+      // Appel de la fonction de suppression avec l'ID du cours
+
+    }
+}
+
 
 // Fonction pour afficher le contenu détaillé des cours d'une matière
 function afficheContenuCours(idDoc, matiereId) {
@@ -132,7 +143,7 @@ function afficheContenuCours(idDoc, matiereId) {
     // Création d'un bouton pour ajouter un nouveau cours (affiche un modal)
 const addButton = document.createElement('button');
 addButton.classList.add('btn', 'btn-success', 'mb-3', 'ms-2');
-addButton.setAttribute('data-bs-toggle', 'modal');
+addButton.setAttribute('data-bs-toggle', 'modal1');
 addButton.setAttribute('data-bs-target', '#addCourseModal');
 addButton.innerHTML = '<i class="fas fa-plus"></i> Ajouter un cours';
 content.appendChild(addButton); // Ajout du bouton à la div "content"
@@ -148,6 +159,10 @@ thead.appendChild(trHead);
 table.appendChild(thead);
 table.appendChild(tbody);
 content.appendChild(table);
+ 
+
+
+
 
 // Récupération des cours de la matière sélectionnée depuis la base de données
 db.collection("classes").doc(idDoc).collection("Matieres").doc(matiereId).collection("Cours").get()
@@ -155,26 +170,44 @@ db.collection("classes").doc(idDoc).collection("Matieres").doc(matiereId).collec
     querySnapshot.forEach((doc) => {
       const cours = doc.data();
       const tr = document.createElement('tr');
-      const documentName = cours.document ? cours.document.name : 'N/A';
-      const videoName = cours.video ? cours.video.name : 'N/A';
-      tr.innerHTML = `<td>${cours.titre}</td>
-      <td>${cours.document}</td>
-      <td>${cours.video}</td>
-<td>
-          <button class="btn btn-primary btn-sm edit-course" data-course-id="${doc.id}">
-            <i class="fas fa-edit"></i> 
-          </button>
-          <button class="btn btn-danger btn-sm delete-course" data-course-id="${doc.id}">
-            <i class="fas fa-trash"></i> 
-          </button>
-        </td>`;
-              tbody.appendChild(tr); // Ajout de la ligne au tableau
+      const documentName = cours.document ? cours.document.name : 'N/A'; // Obtenez le nom du document
+      const videoName = cours.video ? cours.video.name : 'N/A'; // Obtenez le nom de la vidéo
+      tr.innerHTML = `
+  <td>${cours.titre}</td>
+  <td>${documentName}</td>
+  <td>${videoName}</td>
+  <td>
+    <button class="btn btn-primary btn-sm edit-course" data-course-id="${doc.id}">
+      <i class="fas fa-edit"></i>
+    </button>
+    <button class="btn btn-danger btn-sm delete-course" data-course-id="${doc.id}">
 
+      <i class="fas fa-trash"></i>
+      
+    </button>
+    
+  </td>`;
+
+
+
+      tbody.appendChild(tr); // Ajout de la ligne au tableau
     });
   })
+
+  
+
   .catch((error) => {
     console.error("Erreur lors de la récupération du contenu des cours :", error);
   });
+  // //suppression du cours
+  // document.getElementById('confirmDeleteCourse').addEventListener('click', function () {
+  //   // Le code pour supprimer le cours devrait aller ici
+  
+  //   // Une fois que la suppression est terminée (après confirmation), vous pouvez fermer la fenêtre modale.
+  //   const deleteCourseModal = new bootstrap.Modal(document.getElementById('deleteCourseModal'));
+  //   deleteCourseModal.hide();
+  // });
+  
 
 // Enregistrement du formulaire modal pour ajouter un nouveau cours
 document.getElementById('addCourseForm').addEventListener('submit', function(e) {
@@ -225,6 +258,19 @@ document.getElementById('addCourseForm').addEventListener('submit', function(e) 
     .catch((error) => {
       console.error("Erreur lors de l'enregistrement :", error);
     });
+
+    
+
 });
   
 }
+  // Récupérez tous les boutons de suppression par leur classe CSS
+  const deleteButtons = document.querySelectorAll('.delete-course');
+
+  // Bouclez sur chaque bouton de suppression pour ajouter un gestionnaire d'événements
+  deleteButtons.forEach((button) => {
+    button.addEventListener('click', function () {
+      const courseId = button.getAttribute('data-course-id');
+      confirmerSuppression(courseId);
+    });
+  });
