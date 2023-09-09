@@ -143,7 +143,7 @@ table.classList.add('table');
 const thead = document.createElement('thead');
 const tbody = document.createElement('tbody');
 const trHead = document.createElement('tr');
-trHead.innerHTML = `<th>Titre</th><th>Document</th><th>Vidéo</th>`;
+trHead.innerHTML = `<th>Titre</th><th>Document</th><th>Vidéo</th><th>Actions</th>`;
 thead.appendChild(trHead);
 table.appendChild(thead);
 table.appendChild(tbody);
