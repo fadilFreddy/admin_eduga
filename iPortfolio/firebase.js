@@ -10,7 +10,8 @@
       appId: "1:325746831998:web:8d5fd48cab9eddc382de2f",
       measurementId: "G-V2THNBH4YS"
     };
-     // Fonction qui affiche la liste des classes dans la sidebar
+     
+// Fonction qui affiche la liste des classes dans la sidebar
 function getData() {
   // Sélection de l'élément de liste des cours
   let cours = document.querySelector('#cours');
@@ -143,7 +144,7 @@ function afficheContenuCours(idDoc, matiereId) {
     // Création d'un bouton pour ajouter un nouveau cours (affiche un modal)
 const addButton = document.createElement('button');
 addButton.classList.add('btn', 'btn-success', 'mb-3', 'ms-2');
-addButton.setAttribute('data-bs-toggle', 'modal1');
+addButton.setAttribute('data-bs-toggle', 'modal');
 addButton.setAttribute('data-bs-target', '#addCourseModal');
 addButton.innerHTML = '<i class="fas fa-plus"></i> Ajouter un cours';
 content.appendChild(addButton); // Ajout du bouton à la div "content"
@@ -199,14 +200,14 @@ db.collection("classes").doc(idDoc).collection("Matieres").doc(matiereId).collec
   .catch((error) => {
     console.error("Erreur lors de la récupération du contenu des cours :", error);
   });
-  // //suppression du cours
-  // document.getElementById('confirmDeleteCourse').addEventListener('click', function () {
-  //   // Le code pour supprimer le cours devrait aller ici
+   //suppression du cours
+  document.getElementById('confirmDeleteCourse').addEventListener('click', function () {
+    // Le code pour supprimer le cours devrait aller ici
   
-  //   // Une fois que la suppression est terminée (après confirmation), vous pouvez fermer la fenêtre modale.
-  //   const deleteCourseModal = new bootstrap.Modal(document.getElementById('deleteCourseModal'));
-  //   deleteCourseModal.hide();
-  // });
+    // Une fois que la suppression est terminée (après confirmation), vous pouvez fermer la fenêtre modale.
+    const deleteCourseModal = new bootstrap.Modal(document.getElementById('deleteCourseModal'));
+    deleteCourseModal.hide();
+  });
   
 
 // Enregistrement du formulaire modal pour ajouter un nouveau cours
@@ -274,3 +275,82 @@ document.getElementById('addCourseForm').addEventListener('submit', function(e) 
       confirmerSuppression(courseId);
     });
   });
+
+
+  // Fonction qui affiche les matières et les cours d'une classe sélectionnée(exo)
+function affiche_exo(idDoc) {
+  const db = firebase.firestore();
+  const content = document.getElementById('content_exo');
+
+  // Suppression du contenu précédent dans la div "content"
+  while (content.firstChild) {
+    content.firstChild.remove();
+  }
+
+  // Récupération des données de la classe sélectionnée
+  db.collection("classes").doc(idDoc).get()
+    .then((doc) => {
+      const classe = doc.data();
+
+      // Création d'un élément de titre pour afficher le nom de la classe
+      const classeSelectionneeElement = document.createElement('h2');
+      classeSelectionneeElement.textContent = classe.intitule;
+      content.appendChild(classeSelectionneeElement);
+
+      // Création d'un tableau pour afficher les matières
+      const table = document.createElement('table');
+      table.classList.add('table');
+      const thead = document.createElement('thead');
+      const tbody = document.createElement('tbody');
+      const trHead = document.createElement('tr');
+      trHead.innerHTML = `<th>Titre</th><th>Nombre de q</th>`;
+      thead.appendChild(trHead);
+
+      // Récupération des matières et de leur nombre de cours
+      db.collection("classes").doc(idDoc).collection("Matieres").get()
+        .then((querySnapshot) => {
+          const promises = [];
+          querySnapshot.forEach((doc) => {
+            const data = doc.data();
+            const tr = document.createElement('tr');
+            tr.innerHTML = `<td>${data.intitule}</td><td>Loading...</td>`;
+            tr.classList.add('table-row');
+            tbody.appendChild(tr);
+
+            // Récupération du nombre de cours pour chaque matière
+            const promise = db.collection("classes").doc(idDoc).collection("Matieres").doc(doc.id).collection("Cours").get()
+              .then((snapshot) => {
+                tr.children[1].textContent = snapshot.size.toString();
+              })
+              .catch((error) => {
+                console.error("Erreur lors de la récupération des cours :", error);
+              });
+
+            promises.push(promise);
+          });
+
+          // Attente de l'exécution de toutes les promesses pour mettre à jour le tableau
+          Promise.all(promises)
+            .then(() => {
+              table.appendChild(thead);
+              table.appendChild(tbody);
+              content.appendChild(table);
+
+              // Ajout d'un gestionnaire d'événement pour chaque ligne du tableau (chaque matière)
+              const tableRows = document.getElementsByClassName('table-row');
+              for (let i = 0; i < tableRows.length; i++) {
+                tableRows[i].addEventListener('click', () => {
+                  const matiereId = querySnapshot.docs[i].id;
+                   afficheContenuCours(idDoc, matiereId); // Fonction pour afficher les détails des cours
+                });
+              }
+            });
+        })
+        .catch((error) => {
+          console.error("Erreur lors de la récupération des matières :", error);
+        });
+    })
+    .catch((error) => {
+      console.error("Erreur lors de la récupération du document :", error);
+    });
+}
